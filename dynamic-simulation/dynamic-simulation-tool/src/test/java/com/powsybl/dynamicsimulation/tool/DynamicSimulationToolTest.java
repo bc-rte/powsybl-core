@@ -72,11 +72,11 @@ class DynamicSimulationToolTest extends AbstractToolTest {
                 "| Result |",
                 "+--------+",
                 "| true   |",
-                "+--------+");
-        assertCommand(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy"}, 0, expectedOut, "");
+                "+--------+" + System.lineSeparator());
+        assertCommandSuccessful(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy"}, expectedOut);
 
         // Run with curves
-        assertCommand(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--curves-file", "/curves.groovy"}, 0, expectedOut, "");
+        assertCommandSuccessful(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--curves-file", "/curves.groovy"}, expectedOut);
     }
 
     @Test
@@ -105,7 +105,7 @@ class DynamicSimulationToolTest extends AbstractToolTest {
                             "chunks" : [ ]
                           }
                         }""";
-        assertCommand(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--output-file", "outputTest"}, 0, expectedOut, "");
+        assertCommandSuccessful(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--output-file", "outputTest"}, expectedOut);
         ComparisonUtils.compareTxt(Files.newInputStream(fileSystem.getPath("outputTest")), expectedOutputFile);
     }
 
@@ -119,28 +119,28 @@ class DynamicSimulationToolTest extends AbstractToolTest {
                 "| Result |",
                 "+--------+",
                 "| true   |",
-                "+--------+");
+                "+--------+" + System.lineSeparator());
         String expectedOutputFile = "+ Dynamic Simulation Tool\n";
-        assertCommand(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--output-log-file", "outputTest"}, 0, expectedOut, "");
+        assertCommandSuccessful(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--output-log-file", "outputTest"}, expectedOut);
         ComparisonUtils.compareTxt(Files.newInputStream(fileSystem.getPath("outputTest")), expectedOutputFile);
     }
 
     @Test
     void testDynamicSimulationWithEvents() throws IOException {
         // Run with events in groovy
-        assertCommand(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--event-models-file", "/eventModels.groovy"}, 0, null, "");
+        assertCommandSuccessful(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--event-models-file", "/eventModels.groovy"});
 
         // Run with events in JSON (not supported)
-        assertCommand(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--event-models-file", "/eventModels.json"}, 3, null, "Unsupported events format: json");
+        assertCommandErrorMatch(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--event-models-file", "/eventModels.json"}, "Unsupported events format: json");
     }
 
     @Test
     void testDynamicSimulationWithCurves() throws IOException {
         // Run with curves in groovy
-        assertCommand(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--curves-file", "/curves.groovy"}, 0, null, "");
+        assertCommandSuccessful(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--curves-file", "/curves.groovy"});
 
         // Run with curves in JSON (not supported)
-        assertCommand(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--curves-file", "/curves.json"}, 3, null, "Unsupported curves format: json");
+        assertCommandErrorMatch(new String[]{"dynamic-simulation", "--case-file", "/network.xiidm", "--dynamic-models-file", "/dynamicModels.groovy", "--curves-file", "/curves.json"}, "Unsupported curves format: json");
     }
 
 }
