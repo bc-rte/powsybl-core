@@ -171,7 +171,7 @@ class SensitivityAnalysisToolTest extends AbstractToolTest {
     }
 
     @Test
-    void checkFailsWhenNetworkFileNotFound() throws IOException {
+    void checkFailsWhenNetworkFileNotFound() {
         assertCommandErrorMatch(new String[] {COMMAND_NAME,
             "--case-file", "wrongFile.xiidm",
             "--factors-file", "factors.json",
@@ -180,7 +180,7 @@ class SensitivityAnalysisToolTest extends AbstractToolTest {
     }
 
     @Test
-    void checkFailsWhenFactorsFileNotFound() throws IOException {
+    void checkFailsWhenFactorsFileNotFound() {
         assertCommandErrorMatch(new String[] {COMMAND_NAME,
             "--case-file", "network.xiidm",
             "--factors-file", "wrongFile.json",
@@ -189,7 +189,7 @@ class SensitivityAnalysisToolTest extends AbstractToolTest {
     }
 
     @Test
-    void checkThrowsWhenOutputFileAndNoFormat() throws IOException {
+    void checkThrowsWhenOutputFileAndNoFormat() {
         assertCommandErrorMatch(new String[] {COMMAND_NAME,
             "--case-file", "network.xiidm",
             "--factors-file", "factors.json",
@@ -198,7 +198,7 @@ class SensitivityAnalysisToolTest extends AbstractToolTest {
     }
 
     @Test
-    void checkThrowsWhenOutputFileAndContingencyDiffFormat() throws IOException {
+    void checkThrowsWhenOutputFileAndContingencyDiffFormat() {
         assertCommandErrorMatch(new String[] {COMMAND_NAME,
             "--case-file", "network.xiidm",
             "--factors-file", "factors.json",
@@ -208,7 +208,7 @@ class SensitivityAnalysisToolTest extends AbstractToolTest {
     }
 
     @Test
-    void runJsonOutputAutoContingencyOut() throws IOException {
+    void runJsonOutputAutoContingencyOut() {
         String expectedOut = "Loading network 'network.xiidm'" + System.lineSeparator() +
                 "Running analysis..." + System.lineSeparator();
         assertCommandSuccessfulMatch(new String[] {COMMAND_NAME,
@@ -267,7 +267,7 @@ class SensitivityAnalysisToolTest extends AbstractToolTest {
     }
 
     @Test
-    void checkThrowsSingleOutputCSV() throws IOException {
+    void checkThrowsSingleOutputCSV() {
         assertCommandErrorMatch(new String[] {COMMAND_NAME,
             "--case-file", "network.xiidm",
             "--factors-file", "factors.json",
