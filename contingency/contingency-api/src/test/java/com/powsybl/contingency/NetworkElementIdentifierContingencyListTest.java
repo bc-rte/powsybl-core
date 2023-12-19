@@ -37,6 +37,13 @@ class NetworkElementIdentifierContingencyListTest {
         assertEquals(2, contingencies.size());
         assertEquals(new Contingency("LINE_S2S3", new LineContingency("LINE_S2S3")), contingencies.get(0));
         assertEquals(new Contingency("LINE_S3S4", new LineContingency("LINE_S3S4")), contingencies.get(1));
+
+        List<Contingency> allContingencies = contingencyList.getAllContingencies(network);
+        assertEquals(4, allContingencies.size());
+        assertEquals(new Contingency("LINE_S2S3", new LineContingency("LINE_S2S3")), allContingencies.get(0));
+        assertEquals(new Contingency("LINE_S3S4", new LineContingency("LINE_S3S4")), allContingencies.get(1));
+        assertEquals(new Contingency("LINE_S4S1", List.of(), Set.of("LINE_S4S1")), allContingencies.get(2));
+        assertEquals(new Contingency("test", List.of(), Set.of("test")), allContingencies.get(3));
     }
 
     @Test
@@ -71,6 +78,11 @@ class NetworkElementIdentifierContingencyListTest {
                 new HvdcLineContingency("HVDC1"),
                 new LoadContingency("LD4")), contingencies.get(1));
         assertEquals(new Contingency("test-one-unexpected-element", new LineContingency("LINE_S3S4")), contingencies.get(2));
+
+        List<Contingency> allContingencies = contingencyList.getAllContingencies(network);
+        assertEquals(4, allContingencies.size());
+        assertEquals(new Contingency("test-one-unexpected-element", List.of(new LineContingency("LINE_S3S4")), Set.of("Unknown")), allContingencies.get(2));
+        assertEquals(new Contingency("test", List.of(), Set.of("test")), allContingencies.get(3));
     }
 
     @Test
@@ -98,6 +110,11 @@ class NetworkElementIdentifierContingencyListTest {
         List<Contingency> contingencies = contingencyList.getContingencies(network);
         assertEquals(1, contingencies.size());
         assertEquals(new Contingency("contingency", Arrays.asList(new LineContingency("NHV1_NHV2_2"), new LineContingency("NHV1_NHV2_1"))), contingencies.get(0));
+
+        List<Contingency> allContingencies = contingencyList.getAllContingencies(network);
+        assertEquals(1, allContingencies.size());
+        assertEquals(new Contingency("contingency", Arrays.asList(new LineContingency("NHV1_NHV2_2"), new LineContingency("NHV1_NHV2_1")), Set.of("test", "NHV1_NHV2")),
+                allContingencies.get(0));
     }
 
     @Test
@@ -138,6 +155,11 @@ class NetworkElementIdentifierContingencyListTest {
                 new LineContingency("NHV1_NHV2_2"), new GeneratorContingency("GEN"))), contingencies.get(0));
         assertEquals(new Contingency("contingencyId2", List.of(new LineContingency("NHV1_NHV2_2"),
                 new GeneratorContingency("GEN"))), contingencies.get(1));
+
+        List<Contingency> allContingencies = contingencyList.getAllContingencies(network);
+        assertEquals(2, allContingencies.size());
+        assertEquals(0, allContingencies.get(0).getElementsNotFound().size());
+        assertEquals(0, allContingencies.get(1).getElementsNotFound().size());
     }
 
     @Test
@@ -154,5 +176,10 @@ class NetworkElementIdentifierContingencyListTest {
         assertEquals(2, contingencies.size());
         assertEquals("Contingency : NHV1_NHV2_2 + GEN", contingencies.get(0).getId());
         assertEquals("Contingency : NHV1_NHV2_1", contingencies.get(1).getId());
+
+        List<Contingency> allContingencies = contingencyList.getAllContingencies(network);
+        assertEquals(2, allContingencies.size());
+        assertEquals(0, allContingencies.get(0).getElementsNotFound().size());
+        assertEquals(0, allContingencies.get(1).getElementsNotFound().size());
     }
 }

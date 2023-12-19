@@ -34,6 +34,11 @@ public class IdBasedNetworkElementIdentifier implements NetworkElementIdentifier
         return identifiable == null ? Collections.emptySet() : Collections.singleton(identifiable);
     }
 
+    @Override
+    public Set<String> getElementsNotFound(Network network) {
+        return network.getIdentifiable(identifier) == null ? Collections.singleton(identifier) : Collections.emptySet();
+    }
+
     public String getIdentifier() {
         return identifier;
     }

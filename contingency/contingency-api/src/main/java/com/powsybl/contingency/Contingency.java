@@ -30,17 +30,28 @@ public class Contingency extends AbstractExtendable<Contingency> {
 
     private final List<ContingencyElement> elements;
 
+    private final Set<String> elementsNotFound;
+
     public Contingency(String id, ContingencyElement... elements) {
-        this(id, Arrays.asList(elements));
+        this(id, Arrays.asList(elements), Set.of());
     }
 
     public Contingency(String id, List<ContingencyElement> elements) {
+        this(id, elements, Set.of());
+    }
+
+    public Contingency(String id, List<ContingencyElement> elements, Set<String> elementsNotFound) {
         this.id = Objects.requireNonNull(id);
         this.elements = new ArrayList<>(Objects.requireNonNull(elements));
+        this.elementsNotFound = new LinkedHashSet<>(Objects.requireNonNull(elementsNotFound));
     }
 
     public String getId() {
         return id;
+    }
+
+    public Set<String> getElementsNotFound() {
+        return elementsNotFound;
     }
 
     public List<ContingencyElement> getElements() {
@@ -55,7 +66,7 @@ public class Contingency extends AbstractExtendable<Contingency> {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Contingency other) {
-            return id.equals(other.id) && elements.equals(other.elements);
+            return id.equals(other.id) && elements.equals(other.elements) && elementsNotFound.equals(other.elementsNotFound);
         }
         return false;
     }
@@ -63,6 +74,11 @@ public class Contingency extends AbstractExtendable<Contingency> {
     public void addElement(ContingencyElement element) {
         Objects.requireNonNull(element);
         elements.add(element);
+    }
+
+    public void addElementNotFound(String id) {
+        Objects.requireNonNull(id);
+        elementsNotFound.add(id);
     }
 
     public void removeElement(ContingencyElement element) {

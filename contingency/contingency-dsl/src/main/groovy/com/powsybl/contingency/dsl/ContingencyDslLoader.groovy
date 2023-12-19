@@ -17,6 +17,7 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.slf4j.LoggerFactory
 
 import java.util.function.Consumer
+import java.util.stream.Collectors
 
 /**
  * @author Sylvain Leclerc {@literal <sylvain.leclerc at rte-france.com>}
@@ -66,13 +67,14 @@ class ContingencyDslLoader extends DslLoader {
             if (contingencySpec.equipments.length == 0) {
                 throw new DslException("'equipments' field is empty")
             }
+            Set<String> elementsNotFound = new LinkedHashSet<>();
             def valid = true
             def builder = Contingency.builder(id)
             for (String equipment : contingencySpec.equipments) {
                 Identifiable identifiable = network.getIdentifiable(equipment)
                 if (identifiable == null) {
                     LOGGER.warn("Equipment '{}' of contingency '{}' not found", equipment, id)
-                    valid = false
+                    elementsNotFound.add(equipment);
                 } else if (identifiable instanceof Line) {
                     builder.addLine(equipment)
                 } else if (identifiable instanceof TwoWindingsTransformer) {
@@ -103,6 +105,7 @@ class ContingencyDslLoader extends DslLoader {
                 extensionList.forEach({ ext ->
                     contingency.addExtension(ext.getClass(), ext)
                 })
+                elementsNotFound.forEach(el -> contingency.addElementNotFound(el))
                 consumer.accept(contingency)
             } else {
                 LOGGER.warn("Contingency '{}' is invalid", id)
@@ -122,7 +125,25 @@ class ContingencyDslLoader extends DslLoader {
         load(network, observer, new ImportCustomizer())
     }
 
+    List<Contingency> loadAll(Network network) {
+        load(network, null, new ImportCustomizer())
+    }
+
+    List<Contingency> loadAll(Network network, ImportCustomizer imports) {
+        load(network, null, imports)
+    }
+
+    List<Contingency> loadAll(Network network, ContingencyDslObserver observer) {
+        load(network, observer, new ImportCustomizer())
+    }
+
     List<Contingency> load(Network network, ContingencyDslObserver observer, ImportCustomizer imports) {
+        loadAll(network, observer, imports).stream()
+                .filter(contingency -> contingency.getElements() != null || !contingency.getElements().isEmpty())
+        .collect(Collectors.toList())
+    }
+
+    List<Contingency> loadAll(Network network, ContingencyDslObserver observer, ImportCustomizer imports) {
 
         List<Contingency> contingencies = new ArrayList<>()
 

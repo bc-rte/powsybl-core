@@ -12,8 +12,10 @@ import com.powsybl.iidm.network.Identifiable;
 import com.powsybl.iidm.network.Network;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author Mathieu Bague {@literal <mathieu.bague@rte-france.com>}
@@ -24,13 +26,16 @@ public class ContingencyBuilder {
 
     private final List<ContingencyElement> elements;
 
+    private final Set<String> elementsNotFound;
+
     ContingencyBuilder(String id) {
         this.id = Objects.requireNonNull(id);
         this.elements = new ArrayList<>();
+        this.elementsNotFound = new LinkedHashSet<>();
     }
 
     public Contingency build() {
-        return new Contingency(id, elements);
+        return new Contingency(id, elements, elementsNotFound);
     }
 
     public ContingencyBuilder addBattery(String id) {
@@ -143,6 +148,11 @@ public class ContingencyBuilder {
 
     public ContingencyBuilder addIdentifiable(Identifiable<?> identifiable) {
         elements.add(ContingencyElement.of(identifiable));
+        return this;
+    }
+
+    public ContingencyBuilder addElementNotFound(String id) {
+        elementsNotFound.add(id);
         return this;
     }
 }

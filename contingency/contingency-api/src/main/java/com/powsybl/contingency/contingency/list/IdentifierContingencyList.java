@@ -14,6 +14,7 @@ import com.powsybl.iidm.network.Network;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -49,7 +50,6 @@ public class IdentifierContingencyList implements ContingencyList {
         return ImmutableList.copyOf(networkElementIdentifiers);
     }
 
-    @Override
     public List<Contingency> getContingencies(Network network) {
         return networkElementIdentifiers.stream()
                 .filter(identifier -> !identifier.filterIdentifiable(network).isEmpty())
@@ -64,6 +64,26 @@ public class IdentifierContingencyList implements ContingencyList {
                                     .map(ContingencyElement::getId)
                                     .collect(Collectors.joining(" + ")));
                     return new Contingency(contingencyId, contingencyElements);
+                })
+                .filter(contingency -> contingency.isValid(network))
+                .collect(Collectors.toList());
+    }
+
+    public List<Contingency> getAllContingencies(Network network) {
+        return networkElementIdentifiers.stream()
+                .map(identifier -> {
+                    Set<String> elementsNotFound = identifier.getElementsNotFound(network);
+
+                    List<ContingencyElement> contingencyElements = identifier.filterIdentifiable(network)
+                            .stream()
+                            .map(ContingencyElement::of)
+                            .collect(Collectors.toList());
+                    String contingencyId = identifier.getContingencyId().orElse("Contingency : " +
+                            contingencyElements
+                                    .stream()
+                                    .map(ContingencyElement::getId)
+                                    .collect(Collectors.joining(" + ")));
+                    return new Contingency(contingencyId, contingencyElements, elementsNotFound);
                 })
                 .filter(contingency -> contingency.isValid(network))
                 .collect(Collectors.toList());
